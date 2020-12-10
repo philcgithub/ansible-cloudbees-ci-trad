@@ -78,6 +78,9 @@ If you are going to use the provisioning playbook then, in gcp-provision-vm/vars
 - gcp_cred_file (the location of the service account json file created earlier)
 - zone (the zone to use in GCP)
 - region (the region to use in GCP)
+- disk_size (the size of the disk to create, e.g. 20 would be 20GB)
+- disk_image (the image to use, e.g. projects/ubuntu-os-cloud/global/images/ubuntu-2010-groovy-v20201126)
+- machine_type (the machine type to use, e.g. n1-standard-2)
 - vm_user (the user to connect to the vm's using SSH)
 - vm_ssh_key_file (the path to the SSH key file created earlier, e.g. ~/id_rsa)
 
