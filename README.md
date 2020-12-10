@@ -7,9 +7,9 @@ Created by Phil Cherry, December 2020
 2. [CloudBees CI configuration](#CloudBees-CI-configuration)
 3. [Preparing Google Cloud Platform](#Preparing-Google-Cloud-Platform)
 4. [Preparing to run the playbooks](#Preparing-to-run-the-playbooks)
-    - [1. Set the variables](#1.-Set-the-variables)
-    - [2. Prepare the inventory file](#2.-Prepare-the-inventory-file)
-    - [3. Prepare the environment](#3.-Prepare-the-environment)
+    - [1. Set the variables](#1-Set-the-variables)
+    - [2. Prepare the inventory file](#2-Prepare-the-inventory-file)
+    - [3. Prepare the environment](#3-Prepare-the-environment)
 8. [Running the playbooks](#Running-the-playbooks)
 9. [Known issues](#Known-issues)
 ## Introduction ##
