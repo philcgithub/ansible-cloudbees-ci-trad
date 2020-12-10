@@ -1,6 +1,17 @@
 # Ansible playbooks to provision and deploy cluster of CloudBees CI for Traditional #
 
 Created by Phil Cherry, December 2020
+
+## Table of Contents ##
+1. [Introduction](#Introduction)
+2. [CloudBees CI configuration](#CloudBees-CI-configuration)
+3. [Preparing Google Cloud Platform](#Preparing-Google-Cloud-Platform)
+4. [Preparing to run the playbooks](#Preparing-to-run-the-playbooks)
+    - [1. Set the variables](#1.-Set-the-variables)
+    - [2. Prepare the inventory file](#2.-Prepare-the-inventory-file)
+    - [3. Prepare the environment](#3.-Prepare-the-environment)
+8. [Running the playbooks](#Running-the-playbooks)
+9. [Known issues](#Known-issues)
 ## Introduction ##
 These playbooks can be used to provision vm's, deploy and do some minimal configuration of CloudBees CI for Traditional in a cluster.  It does not currently include deploying agents, just the Operations Centre and Client Master(s).  You may use them and adjust them to your needs, but are not supported by CloudBees.
 
@@ -123,7 +134,7 @@ cm1 http_port=8080 ansible_host=12.456.789.01 ansible_connection=ssh ansible_use
 cm2 http_port=8080 ansible_host=12.567.890.12 ansible_connection=ssh ansible_user=phil ansible_ssh_private_key_file="~/id_rsa"
 ```
 
-### 3. Prepare the environment
+### 3. Prepare the environment ###
 
 Use ssh-agent and ssh-add so you don't need to enter the SSH key passphrase for every instance.  When running a full "provision-and-deploy-all.yaml" I kept getting issues with entering the password and this works around that problem:
 
