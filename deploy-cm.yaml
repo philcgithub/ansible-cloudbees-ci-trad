@@ -1,0 +1,4 @@
+# Deploy CloudBees Client Masters to all hosts in the 'all_cm' group in the inventory file by using the vm Role
+- hosts: all_cm
+  roles:
+  - cm

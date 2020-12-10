@@ -1,0 +1,19 @@
+# This playbook will provision a cluster of vm's and install CI for Traditional
+# There will be a single Operations Centre and multiple Client Masters connected to it
+# The inventory file must be suitably prepared (see GitHub repo README)
+
+# Provision the vm's based on contents of inventory file and add data to the inventory file
+- name: Provisions VM's
+  import_playbook: gcp-provision-vm/gcp-provision-vm-update-inv.yaml
+
+# Deploy Operations Centre on to the cjoc instance
+- name: Deploy CJOC
+  hosts: cjoc
+  roles:
+  - cjoc
+
+# Deploy Client Masters on to all cm instances
+- name: Deploy CM's
+  hosts: all_cm
+  roles:
+  - cm

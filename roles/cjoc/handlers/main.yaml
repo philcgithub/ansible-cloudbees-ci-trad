@@ -1,0 +1,15 @@
+# This handler waits for Jenkins to state in log that it is up and running
+- name: Wait for OC to start
+  wait_for:
+    path: "{{ log_dir }}/cloudbees-core-oc.log"
+    search_regex: "Jenkins is fully up and running"
+    delay: 10
+    timeout: 120
+    msg: "Operations Center did not start or did not start in a timely manner"
+
+# This handler waits for the file structure to be created
+# This is required on the first start of the server as it takes a few seconds to build the folder contents
+# The logs directory is one of the last to be created
+- name: Wait for initial startup
+  wait_for:
+    path: "{{ install_dir }}/license.xml"

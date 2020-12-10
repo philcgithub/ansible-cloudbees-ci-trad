@@ -1,0 +1,22 @@
+# Get the jenkins-cli.jar file from the local Jenkins instance so we can execute groovy against the instance
+- name: Retrieve jenkins-cli.jar
+  get_url:
+    url: http://localhost:8888/jnlpJars/jenkins-cli.jar
+    dest: /tmp/jenkins-cli.jar
+    force: yes
+
+# Copy the 50-declare-client-master.groovy template to the target
+# This is used to create Client Master objects in Operations Centre, which the Client Masters will connect to
+- name: Copy declare-client-master groovy script to target
+  template:
+    src: 50-declare-client-master.groovy
+    dest: /tmp/50-declare-client-master-{{ item }}.groovy
+    owner: cloudbees-core-oc
+    group: cloudbees-core-oc
+  become: yes
+  with_items: "{{ groups['all_cm'] }}"
+
+# Execute the 50-declare-client-master-groovy script
+- name: Execute those scripts
+  shell: 'java -jar /tmp/jenkins-cli.jar -s http://{{ ansible_host }}:{{ http_port }}/ -webSocket -auth {{ admin_user }}:{{ admin_password }} groovy = < /tmp/50-declare-client-master-{{ item }}.groovy'
+  with_items: "{{ groups['all_cm'] }}"

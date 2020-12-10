@@ -1,0 +1,13 @@
+- name: Call provisioning tasks
+  hosts: localhost
+  vars_files:
+  - vars/main.yaml
+  tasks:
+  # Provision all the instances based on content of the inventory file
+  - include_tasks: tasks/gcp-provision-vm.yaml
+    with_items:
+    - '{{ groups["all"] }}'
+
+  # Inventory file has been updated, so reload it
+  - name: Reload the contents of the inventory file
+    meta: refresh_inventory

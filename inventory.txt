@@ -1,0 +1,4 @@
+cjoc http_port=8888 ansible_host=35.210.3.41 ansible_connection=ssh ansible_user=phil ansible_ssh_private_key_file="~/Google Drive/Keys/GCE SSH Key/id_rsa"
+[all_cm]
+cm1 http_port=8080 ansible_host=35.206.152.250 ansible_connection=ssh ansible_user=phil ansible_ssh_private_key_file="~/Google Drive/Keys/GCE SSH Key/id_rsa"
+cm2 http_port=8080 ansible_host=35.210.219.78 ansible_connection=ssh ansible_user=phil ansible_ssh_private_key_file="~/Google Drive/Keys/GCE SSH Key/id_rsa"

@@ -1,0 +1,4 @@
+# Deploy CloudBees Operations Centre to the host called 'cjoc' in the inventory file by using the cjoc Role
+- hosts: cjoc
+  roles:
+  - cjoc

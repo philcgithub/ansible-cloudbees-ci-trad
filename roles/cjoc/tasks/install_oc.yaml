@@ -1,0 +1,46 @@
+# Install wget, we need this to get the apt key of the CloudBees package
+- name: Install wget
+  apt: name=wget state=present update_cache=yes
+  become: yes
+
+# Install Java 8 for Jenkins
+- name: Install Java 8
+  apt: name=openjdk-8-jdk state=present update_cache=yes
+  become: yes
+
+# move any existing log file to the side
+# Only needed if re running playbook on system with existing installation
+- name: Check if log already exists
+  stat:
+    path: "{{ install_dir }}/cloudbees-core-oc.log"
+  register: stat_result
+
+- name: Move log file
+  command: 'mv {{ install_dir }}/cloudbees-core-oc.log {{ install_dir }}/cloudbees-core-oc-upto-{{ ansible_date_time.date }}-{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }}.log'
+  become: yes
+  when: stat_result.stat.exists
+
+# Add the apt key of the CloudBees debian package
+- name: Add the apt key of the CloudBees debian package
+  shell: "wget -q -O - https://downloads.cloudbees.com/cloudbees-core/traditional/operations-center/rolling/debian/cloudbees.com.key | sudo apt-key add -"
+  args:
+    warn: no
+
+# Add entry to apt's source list file
+- name: Add entry to apt's sources list file
+  lineinfile:
+    path: '/etc/apt/sources.list'
+    line: 'deb https://downloads.cloudbees.com/cloudbees-core/traditional/operations-center/rolling/debian binary/'
+    create: yes
+  become: yes
+
+# Install the CloudBees OC application
+- name: Install the Operations Centre application
+  apt: name=cloudbees-core-oc={{ cloudbees_version }} state=present update_cache=yes force_apt_get=yes
+  become: yes
+  notify: Wait for OC to start
+
+# The above uses a notify handler but as the firing of this seems unreliable the next step forces a wait for the initial startup to complete
+- name: Wait for initial startup
+  wait_for:
+    path: "{{ install_dir }}/license.xml"

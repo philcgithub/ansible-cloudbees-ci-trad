@@ -1,0 +1,24 @@
+admin_user: "admin"
+admin_password: "admin123"
+cloudbees_version: "2.263.1.2"
+install_dir: "/var/lib/cloudbees-core-oc"
+log_dir: "/var/log/cloudbees-core-oc"
+license_file: "~/Google Drive/Files/Products/CBCI/license.xml"
+plugins:
+  - { name: antisamy-markup-formatter, version: '2.1'}
+  - { name: aws-credentials, version: '1.28'}
+  - { name: aws-java-sdk, version: '1.11.854'}
+  - { name: cloudbees-ssh-slaves, version: '2.7'}
+  - { name: cloudbees-update-center-plugin, version: '4.50'}
+  - { name: credentials-binding, version: '1.24'}
+  - { name: infradna-backup, version: '3.38.28'}
+  - { name: ldap, version: '1.26'}
+  - { name: nectar-rbac, version: '5.50'}
+  - { name: operations-center-clusterops, version: '2.263.0.1'}
+  - { name: operations-center-jnlp-controller, version: '2.263.0.1'}
+  - { name: operations-center-monitoring, version: '2.263.0.1'}
+  - { name: operations-center-rbac, version: '2.263.0.1'}
+  - { name: operations-center-sso, version: '2.263.0.1'}
+  - { name: operations-center-updatecenter, version: '2.263.0.1'}
+  - { name: plain-credentials, version: '1.7'}
+  - { name: ssh-credentials, version: '1.18.1'}

@@ -1,0 +1,14 @@
+# Find all the groovy files that were copied into init.groovy.d by setup_cm.yaml
+- name: Find all the groovy files
+  find:
+    paths: "{{ install_dir }}/init.groovy.d"
+    patterns: "*.groovy"
+  register: files_to_delete
+
+# Delete the files found above
+- name: Remove all the matched files
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  become: yes
+  with_items: "{{ files_to_delete.files }}"

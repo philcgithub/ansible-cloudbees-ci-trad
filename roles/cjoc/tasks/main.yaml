@@ -1,0 +1,17 @@
+# This role will install CloudBees Operations Centre
+
+# Install the base CloudBees OC package
+- name: Install OC
+  include: install_oc.yaml
+
+# Perform basic setup of OC
+- name: Setup OC
+  include: setup_oc.yaml
+
+# Decleare the Client Masters objects so that Client Masters can connect
+- name: Declare Client Masters.yaml
+  include: declare_cms.yaml
+
+# Cleanup the scripts and files we copied to target and ran
+- name: Cleanup OC
+  include: cleanup_oc.yaml

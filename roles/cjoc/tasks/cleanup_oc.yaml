@@ -1,0 +1,37 @@
+# Find all the groovy files that were copied into init.groovy.d by setup_oc.yaml
+- name: Find all the groovy files in init.groovy.d
+  find:
+    paths: "{{ install_dir }}/init.groovy.d"
+    patterns: "*.groovy"
+  register: files_to_delete
+
+# Delete the files found above
+- name: Remove all the matched files
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  become: yes
+  with_items: "{{ files_to_delete.files }}"
+
+# Find all the groovy files beginning with 50 that we put into the tmp folder
+# See ../templates to see which files would have been copied
+- name: Find all the relevant groovy files in /tmp
+  find:
+    paths: "/tmp"
+    patterns: "50*.groovy"
+  register: tmp_files_to_delete
+
+# Delete the files found above
+- name: Remove all the matched files
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  become: yes
+  with_items: "{{ tmp_files_to_delete.files }}"
+
+# Remove the jenkins-cli-jar that we downloaded
+- name: Remove jenkins-cli.jar
+  file:
+    path: "/tmp/jenkins-cli.jar"
+    state: absent
+  become: yes

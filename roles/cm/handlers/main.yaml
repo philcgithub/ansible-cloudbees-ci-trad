@@ -1,0 +1,8 @@
+# This handler waits for Jenkins to state in log that it is up and running
+- name: Wait for CM to start
+  wait_for:
+    path: "{{ log_dir }}/cloudbees-core-cm.log"
+    search_regex: "Jenkins is fully up and running"
+    delay: 10
+    timeout: 120
+    msg: "Client Master did not start or did not start in a timely manner"

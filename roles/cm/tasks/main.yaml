@@ -1,0 +1,13 @@
+# This role will install CloudBees Client Master
+
+# Install the base CloudBees CM package
+- name: Install CM
+  include: install_cm.yaml
+
+# Perform basic setup of CM
+- name: Setup CM
+  include: setup_cm.yaml
+
+# Cleanup the scripts and files we copied to target and ran
+- name: Cleanup CM
+  include: cleanup_cm.yaml

@@ -1,0 +1,92 @@
+# Copy the CloudBees license file to the Home directory
+- name: Copy license file to Home directory
+  template:
+    src: "{{ license_file }}"
+    dest: "{{ install_dir }}/license.xml"
+    owner: cloudbees-core-oc
+    group: cloudbees-core-oc
+    force: yes
+  become: yes
+
+# Add the Jenkins arg to skip the setup wizard
+- name: Add Jenkins Args to config file
+  lineinfile:
+    path: "/etc/default/cloudbees-core-oc"
+    line: 'JENKINS_ARGS="--webroot=/var/cache/$NAME/war --httpPort=$HTTP_PORT -Djenkins.install.runSetupWizard=false"'
+    regexp: '^JENKINS_ARGS="(.*)"$'
+    backrefs: yes
+  become: yes
+
+# Install Jenkins plugins
+- name: Install plugins
+  get_url:
+    url: https://jenkins-updates.cloudbees.com/download/plugins/{{ item.name }}/{{ item.version }}/{{ item.name }}.hpi
+    dest: "{{ install_dir }}/plugins/{{ item.name }}.jpi"
+    force: yes
+  become: yes
+  with_items:
+  - "{{ plugins }}"
+
+# Create the init.groovy.d directory
+- name: Create init.groovy.d directory
+  file:
+    path: "{{ install_dir }}/init.groovy.d"
+    state: directory
+    owner: cloudbees-core-oc
+    group: cloudbees-core-oc
+  become: yes
+
+# Copey in the 01-create-admin-user.groovy script
+- name: Copy 01-create-admin-user.groovy script over
+  template:
+    src: '01-create-admin-user.groovy'
+    dest: '{{ install_dir }}/init.groovy.d/01-create-admin-user.groovy'
+    owner: cloudbees-core-oc
+    group: cloudbees-core-oc
+  become: yes
+
+# Copy in the 02-install-state-completed.groovy script
+- name: Copy 02-install-state-completed.groovy script over
+  template:
+    src: '02-install-state-completed.groovy'
+    dest: '{{ install_dir }}/init.groovy.d/02-install-state-completed.groovy'
+    owner: cloudbees-core-oc
+    group: cloudbees-core-oc
+  become: yes
+
+# Copy in the 03-set-jenkins-url.groovy script
+- name: Copy 03-set-jenkins-url.groovy script over
+  template:
+    src: '03-set-jenkins-url.groovy'
+    dest: '{{ install_dir }}/init.groovy.d/03-set-jenkins-url.groovy'
+    owner: cloudbees-core-oc
+    group: cloudbees-core-oc
+  become: yes
+
+# Move the log file from the previous startup to the side so we can watch new log events
+- name: Move log file
+  command: 'mv {{ log_dir }}/cloudbees-core-oc.log {{ log_dir }}/cloudbees-core-oc-upto-{{ ansible_date_time.date }}-{{ ansible_date_time.hour }}-{{ ansible_date_time.minute }}.log'
+  become: yes
+
+# Now the setup is done, restart the OC service so changes take affect
+- name: Restart the OC service
+  service: name=cloudbees-core-oc state=restarted
+  become: yes
+
+# Wait for OC to start
+- name: Wait for OC to start
+  wait_for:
+    path: "{{ log_dir }}/cloudbees-core-oc.log"
+    search_regex: "Jenkins is fully up and running"
+    delay: 10
+    timeout: 120
+    msg: "Operations Center did not start or did not start in a timely manner"
+
+# Make sure that all the groovy startup scripts we copied in have run
+- name: Make sure the last groovy startup script ran
+  wait_for:
+    path: "{{ log_dir }}/cloudbees-core-oc.log"
+    search_regex: "j.util.groovy.GroovyHookScript#execute: Executing {{ install_dir }}/init.groovy.d/03-set-jenkins-url.groovy"
+    delay: 10
+    timeout: 120
+    msg: "03-set-jenkins-url.groovy script did not run or did not run in a timely manner"

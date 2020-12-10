@@ -1,0 +1,96 @@
+# This is a standalone playbook which can be used to provision an instance
+# with a fixed external address and an open port in the firewall
+- name: Create an instance
+  hosts: localhost
+  gather_facts: no
+  vars:
+      sysname: "cjoc"
+      gcp_project: "pcherry-ansible-test"
+      gcp_cred_kind: "serviceaccount"
+      gcp_cred_file: "~/Google Drive/Keys/philsa@pcherry-ansible-test/service_account.json"
+      zone: "europe-west1-b"
+      region: "europe-west1"
+      disk_size: "20"
+      disk_image: "projects/ubuntu-os-cloud/global/images/ubuntu-2010-groovy-v20201126"
+      machine_type: "n1-standard-2"
+      extport: "8888"
+
+  tasks:
+  # Create the disk for the vm
+   - name: create a disk
+     gcp_compute_disk:
+         name: '{{ sysname }}'
+         size_gb: "{{ disk_size }}"
+         source_image: "{{ disk_image }}"
+         zone: "{{ zone }}"
+         project: "{{ gcp_project }}"
+         auth_kind: "{{ gcp_cred_kind }}"
+         service_account_file: "{{ gcp_cred_file }}"
+         scopes:
+           - https://www.googleapis.com/auth/compute
+         state: present
+     register: disk
+
+   # Create a fixed external address for this vm
+   - name: create a address
+     gcp_compute_address:
+         name: '{{ sysname }}-external-address'
+         region: "{{ region }}"
+         project: "{{ gcp_project }}"
+         auth_kind: "{{ gcp_cred_kind }}"
+         service_account_file: "{{ gcp_cred_file }}"
+         network_tier: STANDARD
+         scopes:
+           - https://www.googleapis.com/auth/compute
+         state: present
+     register: address
+
+   # Create the vm itself attaching it to the disk and address
+   - name: create a instance
+     gcp_compute_instance:
+         state: present
+         name: '{{ sysname }}'
+         machine_type: "{{ machine_type }}"
+         disks:
+           - auto_delete: true
+             boot: true
+             source: "{{ disk }}"
+         network_interfaces:
+             - network: null # use default
+               access_configs:
+                 - name: 'External NAT'
+                   nat_ip: "{{ address }}"
+                   type: 'ONE_TO_ONE_NAT'
+                   network_tier: STANDARD
+         zone: "{{ zone }}"
+         project: "{{ gcp_project }}"
+         auth_kind: "{{ gcp_cred_kind }}"
+         service_account_file: "{{ gcp_cred_file }}"
+         tags:
+           items:
+           - 'allow-{{ extport }}'
+         scopes:
+           - https://www.googleapis.com/auth/compute
+     register: instance
+
+   # Open the correct Jenkins URL in the firewall
+   # The above instances has a tag attached that matches to this firewall rule
+   - name: allow port {{ extport }} through the firewall
+     google.cloud.gcp_compute_firewall:
+       name: allow-{{ extport }}
+       allowed:
+       - ip_protocol: tcp
+         ports:
+         - "{{ extport }}"
+       target_tags:
+       - allow-{{ extport }}
+       source_ranges:
+       - '0.0.0.0/0'
+       project: "{{ gcp_project }}"
+       auth_kind: "{{ gcp_cred_kind }}"
+       service_account_file: "{{ gcp_cred_file }}"
+       state: present
+
+   # Wait for the instance to start
+   - name: Wait for SSH to come up
+     wait_for: host={{ address.address }} port=22 delay=10 timeout=60

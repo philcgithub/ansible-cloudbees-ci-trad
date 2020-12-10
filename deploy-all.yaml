@@ -1,0 +1,11 @@
+# Deploy CloudBees Operations Centre to the host called 'cjoc' in the inventory file by using the cjoc Role
+- name: Deploy CJOC
+  hosts: cjoc
+  roles:
+  - cjoc
+
+# Deploy CloudBees Client Masters to all hosts in the 'all_cm' group in the inventory file by using the vm Role
+- name: Deploy CM's
+  hosts: all_cm
+  roles:
+  - cm
