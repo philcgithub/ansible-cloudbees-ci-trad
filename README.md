@@ -2,7 +2,7 @@
 
 Created by Phil Cherry, December 2020
 ## Introduction ##
-These playbooks can be used to provision vm's, deploy and do some minimal configuration of CloudBees CI for Traditional in a cluster.  You may use them and adjust them to your needs, but are not supported by CloudBees.
+These playbooks can be used to provision vm's, deploy and do some minimal configuration of CloudBees CI for Traditional in a cluster.  It does not currently include deploying agents, just the Operations Centre and Client Master(s).  You may use them and adjust them to your needs, but are not supported by CloudBees.
 
 **Note:  You will need your own license file for CloudBees CI.**
 
